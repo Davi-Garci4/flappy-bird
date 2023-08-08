@@ -34,8 +34,8 @@ class Passaro:
 
     def pular(self):
         self.velocidade = -10.5   # Essa é a velocidade do pulo do pássaro
-        self.velocidade = 0       #
-        self.altura = self.y
+        self.tempo = 0            #Esse é o tempo de deslocamento do pulo
+        self.altura = self.y      #A altura dele é a posição y referente a o gráfico do pygame
 
     def mover(self):
         #Calcular o deslocamento
@@ -50,15 +50,14 @@ class Passaro:
         self.y += deslocamento   # Aqui esta o deslocamento pássaro
 
         #angulo do pássaro
-        if deslocamento < 0 or self.y < (self.altura + 50):    #Aqui eu estou deixando o angulo do pássaro pra cima, sempre que ele esta acima do angulo inicial
+        if deslocamento < 0 or self.y < (self.altura + 50):    #Aqui eu estou deixando o angulo do pássaro pra cima, sempre que ele esta acima da altura inicial
             if self.angulo < self.rotacao_maxima:
                 self.angulo = self.rotacao_maxima
-
         else:
             if self.angulo >- 90:                           #Aqui eu estou limitando o angulo de caida do passaro a -90 graus
                 self.angulo -= self.velocidade_rotacao      # Aqui eu estou gerando a caida do pássaro gradativamente até o angulo de -90 graus
 
-    def desenhar(self):
+    def desenhar(self, tela):                                     #Aqui eu estou estabelecendo aonde a asa do pássaro estará de acordo com os seus pulos
         self.contagem_imagem += 1
         if self.contagem_imagem < self.tempo_animacao:
             self.imagem = self.imagens[0]
@@ -66,7 +65,25 @@ class Passaro:
             self.imagem = self.imagens[1]
         elif self.contagem_imagem < self.tempo_animacao*3:
             self.imagem = self.imagens[2]
+        elif self.contagem_imagem < self.tempo_animacao*4:
+            self.imagem = self.imagens[1]
+        elif self.contagem_imagem < self.tempo_animacao*4 + 1:
+            self.imagem = self.imagens[0]
+            self.contagem_imagem = 0
 
+        #Definindo a imagem que o pássaro estará quando ele estiver caindo
+        if self.angulo <= -80:
+            self.imagem = self.imagens[1]
+            self.contagem_imagem = self.tempo_animacao*2   #Aqui eu estou definindo que a próxima batida de asa do pássarp após ele cair será para baixo
+
+        #Desenhando a imagem do pássaro
+        imagem_rotacionada = pygame.transform.rotate(self.imagem, self.angulo)   #Aqui eu estou fazendo com que a imagem do pássaro se mova de acordo com o angulo estabelecido
+        pos_centro_imagem = self.imagem.get_rect(topleft=(self.x, self.y)).center  #Aqui eu estou criando a posição da imagem do objeto de acordo com a tela. O "topleft" seria o extremo superior esquerdo, porém eu quero o centro dando o ".center"
+        retangulo = imagem_rotacionada.get_rect(center=pos_centro_imagem)  #Aqui eu estou falanfo que a posição centro do retangulo vai ser a mesma posição centro da imagem.
+        tela.blit(imagem_rotacionada, retangulo.topleft)  #Aqui eu estou desenhando o pássaro na tela
+
+    def get_mask(self):
+        pygame.mask.from_surface(self.imagem) #Aqui eu estou dividindo o retangulo em volta do pássaro em retângulo menores (pixels), para avaliar de uma forma mais minuciosa a colisão
 
 class Cano:
     pass
