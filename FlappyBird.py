@@ -86,7 +86,23 @@ class Passaro:
         pygame.mask.from_surface(self.imagem) #Aqui eu estou dividindo o retangulo em volta do pássaro em retângulo menores (pixels), para avaliar de uma forma mais minuciosa a colisão
 
 class Cano:
-    pass
+    distancia = 200   #Aqui é a distância do cano de cima e do cano de baixo
+    velocidade = 5   #Aqui é a velocidade que o cano estará se movimentando
+
+    def __init__(self, x):
+        self.x = x
+        self.altura = 0
+        self.pos_topo = 0       #Essas duas posições são baseadas no eixo y
+        self.pos_base = 0
+        self.img_cano_topo = pygame.transform.flip(imagem_cano, False, True)    #Aqui eu estou flipando a imagem do cano, no eixo x eu deixei False e no eixo y eu deixei true, pois quero coloca-lo de ponta-cabeça
+        self.img_cano_base = imagem_cano
+        self.passou = False     # esse parâmetro é para saber se o cano ja passou do pássaro
+        self.definir_altura()
+
+    def definir_altura(self):
+        self.altura = random.randrange(50, 450)  #Aqui eu deixei aleatória a aparição dos espaços pro pássaro passar, através do random, e estabeleci limites para que não fique impossível
+        self.pos_base = self.altura - self.img_cano_topo.get_height()
+        self.pos_base = self.altura + self.distancia
 
 class Chao:
     pass
